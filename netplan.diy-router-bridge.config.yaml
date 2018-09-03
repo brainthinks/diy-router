@@ -1,6 +1,6 @@
 network:
   version: 2
-  ethernets:
+  wifis:
     # You can customize other things in this file if you wish.  I had to add my wifi interface manually
     wlp5s0:
       addresses: []
