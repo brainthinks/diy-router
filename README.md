@@ -153,12 +153,17 @@ You should now be able to get on the internet with your wired laptop!  Next, we'
 Continuing to follow Renaud's original guide, we'll be using `hostapd` to manage the access point.  I did try to have `netplan` do this on its own, because the documentation makes the configuration look simple, but unfortunately the wifi access point configuration will not work on Ubuntu Server 18.04 because the access point mode requires `network-manager`, which is not something we have by default, and not something that is worth the trouble to install (based on what I've read - even Renaud's guide has you uninstall it from 16.04).  Let's get `hostapd` installed:
 
 ```bash
-sudo apt install -y hostapd --fix-missing
+sudo apt install -y hostapd
 ```
 
+By default, `hostapd` does not enable its service at startup, so we don't have to disable it.  Now all we have to do is run the script:
 
 
+```bash
+sudo ./access-point.sh
+```
 
+You should now be able to connect wirelessly, and access the internet!
 
 
 ## Research Notes
@@ -185,4 +190,8 @@ By far, the biggest problem I ran into was an issue where every sudo command got
 * https://launchpad.net/ubuntu/+archivemirrors
 * https://launchpad.net/ubuntu/+mirror/mirror.cs.jmu.edu-archive
 * https://askubuntu.com/questions/1061504/ubuntu-server-18-04-lts-as-wifi-access-point
-*
+
+## @TODO
+
+* Enable AC wifi
+* Create a service to start when the machine starts

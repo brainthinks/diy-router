@@ -2,4 +2,4 @@
 
 hostapd \
   -P /var/run/hostapd-br0.pid \
-  -B ./hostapd-test.conf
+  -B ./hostapd-diy-router.conf
