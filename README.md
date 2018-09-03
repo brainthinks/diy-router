@@ -7,13 +7,13 @@ So before you embark on this journey, I recommend mapping out what you want your
 
 ## Network Diagram
 
-I recommend you have a network diagram of your own.  You can certainly use mine, and I think this one will applicable to most situations.  However, if you know your network will be more complicated than this, or will have different components or something, I recommend making a diagram of your network as the first step.
+I recommend you have a network diagram of your own.  You can certainly use mine, and I think this one will applicable to most situations, as I kept it as simple as I could.  However, if you know your network will be more complicated than this, or will have different components or something, I recommend making a diagram of your network as the first step.
 
  - fios goes into modem
- - modem talks to custom router
- - custom router is dhcp server
- - custom router handles wifi
- - custom router has one port out to a switch
+ - modem talks to DIY Router
+ - DIY Router is dhcp server
+ - DIY Router handles wifi
+ - DIY Router has one port out to a switch
  - switch handles wired connections
 
 @TODO - make this a graphic
@@ -48,8 +48,7 @@ To find out what processes are running, run
 ps -aux | grep [pid]
 
 
-
-## Getting Started
+## Creating Your DIY Router
 
 At this point, you will need to have the built computer ready to go.  If you need help with that, and for an overview of the networking hardware involved, see [Part 1](https://renaudcerrato.github.io/2016/05/21/build-your-homemade-router-part1/) of Renaud Cerrato's homemade router guide.
 
@@ -83,7 +82,7 @@ sudo netplan apply
 
 ### Set up the DHCP Server
 
-The DHCP Server is the thing that gives the internet-connected devices in our home an IP address (in most cases).  We need to set one up for ourselves, since we want our custom router to be in control of providing the network connection to all of the devices in our home.
+The DHCP Server is the thing that gives the internet-connected devices in our home an IP address (in most cases).  We need to set one up for ourselves, since we want our DIY Router to be in control of providing the network connection to all of the devices in our home.
 
 We'll be using `dnsmasq` as our DHCP Server.  Install it:
 
@@ -96,19 +95,7 @@ Take a look at `dhcp-server.sh` to make sure it meets your needs.  If you're not
 
 Now, we have to ensure `systemd-resolved` will not create a conflict with our "custom" `dnsmasq`.  You will need to edit the `resolved` configuration by running `sudo nano /etc/systemd/resolved.conf`, and addding the line `DNSStubListener=udp` at the bottom of the file.  Finally, restart the service by running `sudo systemctl restart systemd-resolved.service`.
 
-When we do this, we are in effect removing the default domain name resolver (DNS).  It is useful to still be able to access places on the internet by their domain names, so let's fix this now.  `sudo nano /etc/netplan/50-cloud-init.yaml`, and add the following configuration to the network interface that is actually connected to the internet:
-
-```
-nameservers:
-  # Cloudflare
-  addresses: [1.1.1.1, 1.0.0.1]
-  # Google
-  addresses: [8.8.8.8, 8.8.4.4]
-```
-
-Then run `sudo netplan apply`.
-
-Finally, we are ready to run our "custom" `dnsmasq`:
+Now, we are ready to run our "custom" `dnsmasq`:
 
 ```bash
 sudo ./dhcp-server.sh
@@ -118,7 +105,7 @@ At this point, it is probably a good idea to make sure everything is working pro
 
 1. `sudo systemctl restart systemd-resolved.service` to ensure the `systemd-resolvd` is still running
 1. `sudo netstat -utlnp | grep :53` to ensure `systemd-resolved` is using port 53 over UDP and `dnsmasq` is using port 53 over TCP
-1. Plug a laptop or some other computer into the second network port on my custom router computer
+1. Plug a laptop or some other computer into the second network port on my DIY Router
 1. Ensure said laptop receives a network connection
 1. `ifconfig -a` on the laptop to ensure my ip address is in the correct range (by default, you should have an ip address between 192.168.2.25 and 192.168.2.90)
 1. `ip route show default` to ensure the ip address came from 192.168.2.1
@@ -127,7 +114,7 @@ If everything looks good, let's move on to the next section.
 
 ### Set up Routing
 
-If you're following along, this step will be complete when our laptop wtih a wired connection to our custom router is able to get on the internet.
+If you're following along, this step will be complete when our laptop wtih a wired connection to our DIY Router is able to get on the internet.
 
 Run `sudo sysctl -w net.ipv4.ip_forward=1` to enable our bridge to get on the internet.  We also want this to persist when the machine is restarted, so we'll need to edit `/etc/sysctl.conf`.  Open that file with `sudo nano /etc/sysctl.conf`, then find and uncommend the line that contains the `net.ipv4.ip_forward=1` configuration.
 
@@ -168,13 +155,13 @@ You should now be able to connect wirelessly, and access the internet!
 
 ## Research Notes
 
-### DHCP Server
+Networking at this level is not in my wheelhouse, so I had to do a small amount of research - the entire first run of the project took me about 12 hours.  Here are the things I learned that didn't make it into the official steps.
 
-Since networking at this level is not in my wheelhouse, I did a small amount of research and it seems that the ISC products and dnsmasq are the most common FOSS DHCP servers that I should consider.  Kea is a replacements for ISC-DHCP, so I really only compared Kea with dnsmasq.  Based on the limited reading and research I have done, I am settling on dnsmasq because a) it is what the 16.04 guide I am using uses, b) it is allegedly best suited for small/home networks, c) is less resource intensive, and d) I didn't find any comments about any major drawbacks that will affect my use case.
+I wasn't sure if I wanted to use `dnsmasq`, since it seemed at first glance to be Renaud's personal preference rather than an established industry standard (I turned out to be wrong).  I looked at some alternatives, and it seems that the ISC products and dnsmasq are the most common FOSS DHCP servers that I should consider.  Kea is a replacements for ISC-DHCP, so I really only compared Kea with dnsmasq.  Based on the limited reading and research I have done, I am settling on dnsmasq because a) it is what the 16.04 guide I am using uses, b) it is allegedly best suited for small/home networks, c) is less resource intensive, and d) I didn't find any comments about any major drawbacks that will affect my use case.
 
 Another big issue for me getting `dnsmasq` to work was its conflict with `systemd-resolved`.  By default in the Ubuntu 18.04 version that I have installed, `systemd-resolved` listens on `127.0.0.53:53` by default, and for whatever reason this conflicts with `dnsmasq`, or at least with the way I have it configured.  It seems that this was a problem other people had to (check the links in the Resources section below).  It seems that right now, the `systemd-resolved` option of `DNSStubListener` is undocumented.  I was able to find the options buried in a github issue comment.  Solving that one took a while.  I got lucky, because as of the time of this writing, the comment that contains the valid enum options was made just 10 days ago!  Also, modifying this gets rid of the default DNS resolution (or something like that), so you appear to lose your internet connection.  Re-instating the `nameservers` property in `netplan` was something I had to figure out on my own.  Thankfully, it is well documented and in many of the examples I looked at.
 
-By far, the biggest problem I ran into was an issue where every sudo command got slow, and every network request took a long time to initialize.  Sometimes, the network requests would fail, and after a while, the domain name resolution was failing every time.  This turned out to be an issue with the IP address I had chosen for my network bridge - you MUST create the bridge on a different subnet!  Meaning that if you are getting your internet from 192.168.1.1, you cannot use 192.168.1.x!  That is why all of my default configurations are 192.168.2.x.
+By far, the biggest problem I ran into (2 - 3 hours, and I almost gave up) was an issue where every sudo command got slow, and every network request took a long time to initialize.  Sometimes, the network requests would fail, and after a while, the domain name resolution was failing every time.  This turned out to be an issue with the IP address I had chosen for my network bridge - you MUST create the bridge on a different subnet!  Meaning that if you are getting your internet from 192.168.1.1, you cannot use 192.168.1.x!  That is why all of my default configurations are 192.168.2.x.  Seems obvious looking back, but for some reason I didn't think the same subnet on independent adapters would cause an issue.
 
 
 ## Resources
@@ -195,3 +182,7 @@ By far, the biggest problem I ran into was an issue where every sudo command got
 
 * Enable AC wifi
 * Create a service to start when the machine starts
+* address the todos throughout
+* clean up the basic commands section
+* create an automated script and/or swak
+* organize the project, config and scripts dirs
