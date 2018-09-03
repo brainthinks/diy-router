@@ -89,7 +89,7 @@ We'll be using `dnsmasq` as our DHCP Server.  Install it:
 
 
 ```bash
-sudo apt install -y dnsmasq
+sudo apt install -y dnsmasq*
 ```
 
 Take a look at `dhcp-server.sh` to make sure it meets your needs.  If you're not sure, then what is there are sensible defaults, so you can keep it like it is.
@@ -120,8 +120,8 @@ At this point, it is probably a good idea to make sure everything is working pro
 1. `sudo netstat -utlnp | grep :53` to ensure `systemd-resolved` is using port 53 over UDP and `dnsmasq` is using port 53 over TCP
 1. Plug a laptop or some other computer into the second network port on my custom router computer
 1. Ensure said laptop receives a network connection
-1. `ifconfig -a` on the laptop to ensure my ip address is in the correct range (by default, you should have an ip address between 192.168.1.25 and 192.168.1.90)
-1. `ip route show default` to ensure the ip address came from 192.168.1.1
+1. `ifconfig -a` on the laptop to ensure my ip address is in the correct range (by default, you should have an ip address between 192.168.2.25 and 192.168.2.90)
+1. `ip route show default` to ensure the ip address came from 192.168.2.1
 
 If everything looks good, let's move on to the next section.
 
@@ -129,14 +129,14 @@ If everything looks good, let's move on to the next section.
 
 If you're following along, this step will be complete when our laptop wtih a wired connection to our custom router is able to get on the internet.
 
-Right now, not even our custom router is on the internet.  Let's change that.  Run `sudo sysctl -w net.ipv4.ip_forward=1` to enable it right now.  We also want this to persist when the machine is restarted, so we'll need to edit `/etc/sysctl.conf`.  Open that file with `sudo nano /etc/sysctl.conf`, then find and uncommend the line that contains the `net.ipv4.ip_forward=1` configuration.
+Run `sudo sysctl -w net.ipv4.ip_forward=1` to enable our bridge to get on the internet.  We also want this to persist when the machine is restarted, so we'll need to edit `/etc/sysctl.conf`.  Open that file with `sudo nano /etc/sysctl.conf`, then find and uncommend the line that contains the `net.ipv4.ip_forward=1` configuration.
 
 Renaud Cerrato's guide says that configuring IPTABLES is hard, so I'm not even going to try.  Instead, he recommends using a program called `firehol`.  This program is part of the `universe` repository, so we have to enable that first:
 
 ```bash
 sudo add-apt-repository universe
 sudo apt update
-sudo apt install -y firehol* --fix-missing
+sudo apt install -y firehol*
 sudo mv /etc/firehol/firehol.conf /etc/firehol/firehol.conf.bak
 sudo cp firehol.conf /etc/firehol/
 sudo systemctl restart firehol.service
@@ -169,7 +169,7 @@ Since networking at this level is not in my wheelhouse, I did a small amount of 
 
 Another big issue for me getting `dnsmasq` to work was its conflict with `systemd-resolved`.  By default in the Ubuntu 18.04 version that I have installed, `systemd-resolved` listens on `127.0.0.53:53` by default, and for whatever reason this conflicts with `dnsmasq`, or at least with the way I have it configured.  It seems that this was a problem other people had to (check the links in the Resources section below).  It seems that right now, the `systemd-resolved` option of `DNSStubListener` is undocumented.  I was able to find the options buried in a github issue comment.  Solving that one took a while.  I got lucky, because as of the time of this writing, the comment that contains the valid enum options was made just 10 days ago!  Also, modifying this gets rid of the default DNS resolution (or something like that), so you appear to lose your internet connection.  Re-instating the `nameservers` property in `netplan` was something I had to figure out on my own.  Thankfully, it is well documented and in many of the examples I looked at.
 
-For whatever reason, I couldn't use `archive.ubuntu.com` - I used the mirror from JMU.  @TODO - document this
+By far, the biggest problem I ran into was an issue where every sudo command got slow, and every network request took a long time to initialize.  Sometimes, the network requests would fail, and after a while, the domain name resolution was failing every time.  This turned out to be an issue with the IP address I had chosen for my network bridge - you MUST create the bridge on a different subnet!  Meaning that if you are getting your internet from 192.168.1.1, you cannot use 192.168.1.x!  That is why all of my default configurations are 192.168.2.x.
 
 
 ## Resources
