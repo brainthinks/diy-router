@@ -1,0 +1,8 @@
+network:
+  version: 2
+  bridges:
+    br0:
+      # Change these interface names to match your needs
+      interfaces: [enp5s0f0, ]
+      dhcp4: true
+      optional: true
