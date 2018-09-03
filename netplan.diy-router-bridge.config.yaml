@@ -3,9 +3,10 @@ network:
   wifis:
     # You can customize other things in this file if you wish.  I had to add my wifi interface manually
     wlp5s0:
-      addresses: []
-      dhcp4: true
-      optional: true
+      access-points:
+        "guest":
+           mode: ap
+           # password: ''
   bridges:
     br0:
       # Change these interface names to match your needs
