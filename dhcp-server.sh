@@ -12,4 +12,3 @@ dnsmasq \
   --conf-file=/dev/null \
   --interface=br0 --except-interface=lo \
   --dhcp-range=192.168.1.25,192.168.1.90,24h
-

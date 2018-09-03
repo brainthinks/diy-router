@@ -5,14 +5,14 @@ network:
   # support access points...
   ethernets:
     # You can customize other things in this file if you wish.  I had to add my wifi interface manually
-    wlp5s0:
+    wlp3s0:
       addresses: []
       dhcp4: true
       optional: true
   bridges:
     br0:
       # Change these interface names to match your needs
-      interfaces: [enp0s17, wlp5s0]
+      interfaces: [enp6s0, wlp3s0]
       dhcp4: true
       # optional: true
       # `address` and `netmask` from ifupdown - @see https://askubuntu.com/questions/972955/ubuntu-17-10-server-static-ip-netplan-how-to-set-netmask

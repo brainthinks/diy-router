@@ -118,7 +118,7 @@ At this point, it is probably a good idea to make sure everything is working pro
 
 If everything looks good, let's move on to the next section.
 
-### Routing
+### Set up Routing
 
 If you're following along, this step will be complete when our laptop wtih a wired connection to our custom router is able to get on the internet.
 
@@ -132,7 +132,23 @@ sudo apt update
 sudo apt install -y firehol* --fix-missing
 sudo mv /etc/firehol/firehol.conf /etc/firehol/firehol.conf.bak
 sudo cp firehol.conf /etc/firehol/
+sudo systemctl restart firehol.service
 ```
+
+You'll also need to configure `firehol` to start at start up.  `sudo nano /etc/default/firehol`, set the line to `START_FIREHOL=YES`.
+
+At this point, I restarted.  Maybe you don't have to, but I wanted to be sure that firehol and everything else we've loaded thus far were in working order.  If you do restart the machine, don't forget to manually run `sudo ./dchp-server`!  We'll get to setting that up to run at startup later.
+
+You should now be able to get on the internet with your wired laptop!  Next, we'll get that laptop on the internet wirelessly.
+
+### Set up the Access Point
+
+Continuing to follow Renaud's original guide, we'll be using `hostapd` to manage the access point.  I did try to have `netplan` do this on its own, because the documentation makes the configuration look simple, but unfortunately the wifi access point configuration will not work on Ubuntu Server 18.04 because the access point mode requires `network-manager`, which is not something we have by default, and not something that is worth the trouble to install (based on what I've read - even Renaud's guide has you uninstall it from 16.04).  Let's get `hostapd` installed:
+
+```bash
+sudo apt install -y hostapd --fix-missing
+```
+
 
 
 
