@@ -1,12 +1,14 @@
 network:
   version: 2
-  wifis:
+  # Note that even though this should be listed as `wifis` with a mode of `ap`,
+  # netplan won't allow it, because ubuntu server uses networkd, which doesn't
+  # support access points...
+  ethernets:
     # You can customize other things in this file if you wish.  I had to add my wifi interface manually
     wlp5s0:
-      access-points:
-        "guest":
-           mode: ap
-           # password: ''
+      addresses: []
+      dhcp4: true
+      optional: true
   bridges:
     br0:
       # Change these interface names to match your needs

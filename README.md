@@ -161,4 +161,5 @@ For whatever reason, I couldn't use `archive.ubuntu.com` - I used the mirror fro
 * https://developers.google.com/speed/public-dns/
 * https://launchpad.net/ubuntu/+archivemirrors
 * https://launchpad.net/ubuntu/+mirror/mirror.cs.jmu.edu-archive
-
+* https://askubuntu.com/questions/1061504/ubuntu-server-18-04-lts-as-wifi-access-point
+*
