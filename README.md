@@ -50,6 +50,7 @@ Install Ubuntu 18.04 Server.  You do not need to set any specific options, just 
 
 If you are not sure where to start with this, or need a refresher, check out [this guide from Ubuntu](https://help.ubuntu.com/community/Installation/FromUSBStick).
 
+
 ### Set up the Network Bridge
 
 I have never worked with or even heard of `netplan` before today, but thankfully, documentation and configuration examples were easy to find, and `yaml` files are a bit nicer (to me) than some of the seemingly custom configuration text files I've worked with in the past.  According to `netplan`'s documentation, we can simply put configuration files in the `/etc/netplan` directory, then run `sudo netplan apply`.  I like this approach, because it doesn't require modifying any default system files.
@@ -64,36 +65,35 @@ sudo cp netplan.diy_router_bridge.config.yaml /etc/netplan
 sudo netplan apply
 ```
 
+### Set up the DHCP Server
 
-###
+The DHCP Server is the thing that gives the internet-connected devices in our home an IP address (in most cases).  We need to set one up for ourselves, since we want our custom router to be in control of providing the network connection to all of the devices in our home.
 
-
-DHCP server
-
-Kea vs dnsmasq
-
-Since networking at this level is not in my wheelhouse, I did a small amount of research and it seems that the ISC products and dnsmasq are the most common FOSS DHCP servers that I should consider.  Kea is a replacements for ISC-DHCP, so I really only compared Kea with dnsmasq.  Based on the limited reading and research I have done, I am settling on dnsmasq because a) it is what the 16.04 guide I am using uses, b) it is allegedly best suited for small/home networks, c) is less resource intensive, and d) I didn't find any comments about any major drawbacks that will affect my use case.  Feel free to use Kea or any other DHCP server you wish, but this guide will only cover dnsmasq.
+We'll be using `dnsmasq` as our DHCP Server.  Install it:
 
 
+```bash
+sudo apt install -y dnsmasq
+```
+
+Take a look at `dhcp-server.sh` to make sure it meets your needs.  If you're not sure, then what is there are sensible defaults, so you can keep it like it is.  When you're ready to test your new DHCP Server, run:
+
+```bash
+./dhcp-server.sh
+```
 
 
+## Research Notes
 
+### DHCP Server
 
-
-
-Steps
-
-Build computer
-Install Ubuntu 18.04
-ifconfig -a
- - ensure you see a wlp entry
-
-
-
+Since networking at this level is not in my wheelhouse, I did a small amount of research and it seems that the ISC products and dnsmasq are the most common FOSS DHCP servers that I should consider.  Kea is a replacements for ISC-DHCP, so I really only compared Kea with dnsmasq.  Based on the limited reading and research I have done, I am settling on dnsmasq because a) it is what the 16.04 guide I am using uses, b) it is allegedly best suited for small/home networks, c) is less resource intensive, and d) I didn't find any comments about any major drawbacks that will affect my use case.
 
 
 ## Resources
 
 * https://renaudcerrato.github.io/2016/05/21/build-your-homemade-router-part1/
 * https://www.hiroom2.com/2018/05/08/ubuntu-1804-bridge-en/
-
+* https://askubuntu.com/questions/972955/ubuntu-17-10-server-static-ip-netplan-how-to-set-netmask
+* https://unix.stackexchange.com/questions/446217/broadcast-and-network-in-netplan
+*
