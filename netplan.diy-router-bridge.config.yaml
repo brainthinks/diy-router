@@ -3,6 +3,6 @@ network:
   bridges:
     br0:
       # Change these interface names to match your needs
-      interfaces: [enp5s0f0, ]
+      interfaces: [enp5s0f0, wlp5s0]
       dhcp4: true
       optional: true
