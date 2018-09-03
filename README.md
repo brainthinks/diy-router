@@ -59,6 +59,13 @@ Install Ubuntu 18.04 Server.  You do not need to set any specific options, just 
 
 If you are not sure where to start with this, or need a refresher, check out [this guide from Ubuntu](https://help.ubuntu.com/community/Installation/FromUSBStick).
 
+Once you have finished installing, I advise you to upgrade available packages.
+
+```bash
+sudo apt update
+sudo apt upgrade -y
+sudo reboot
+```
 
 ### Set up the Network Bridge
 
