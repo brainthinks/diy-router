@@ -167,7 +167,10 @@ By far, the biggest problem I ran into (2 - 3 hours, and I almost gave up) was a
 ## Resources
 
 * https://renaudcerrato.github.io/2016/05/21/build-your-homemade-router-part1/
+* https://en.wikipedia.org/wiki/Bridging_(networking)
 * https://www.hiroom2.com/2018/05/08/ubuntu-1804-bridge-en/
+* https://blogging.dragon.org.uk/howto-setup-dnsmasq-as-dns-dhcp/
+* http://www.thekelleys.org.uk/dnsmasq/doc.html
 * https://askubuntu.com/questions/972955/ubuntu-17-10-server-static-ip-netplan-how-to-set-netmask
 * https://unix.stackexchange.com/questions/446217/broadcast-and-network-in-netplan
 * https://github.com/systemd/systemd/pull/4061
@@ -177,6 +180,12 @@ By far, the biggest problem I ran into (2 - 3 hours, and I almost gave up) was a
 * https://launchpad.net/ubuntu/+archivemirrors
 * https://launchpad.net/ubuntu/+mirror/mirror.cs.jmu.edu-archive
 * https://askubuntu.com/questions/1061504/ubuntu-server-18-04-lts-as-wifi-access-point
+* https://firehol.org/
+* https://help.ubuntu.com/community/Installation/FromUSBStick
+* https://netplan.io/examples
+* https://bugs.launchpad.net/netplan/+bug/1781652
+* https://askubuntu.com/questions/605424/how-to-show-just-the-ip-address-of-my-router#605476
+
 
 ## @TODO
 
@@ -186,3 +195,4 @@ By far, the biggest problem I ran into (2 - 3 hours, and I almost gave up) was a
 * clean up the basic commands section
 * create an automated script and/or swak
 * organize the project, config and scripts dirs
+* organize resources?
